@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# coding: utf-8
+
 """
 Detects Cars in an image using KittiSeg.
 
@@ -28,7 +31,7 @@ import logging
 import os
 import sys
 
-import collections
+import collections  # python build-in
 
 # configure logging
 
@@ -43,12 +46,12 @@ import scipy.misc
 import tensorflow as tf
 
 
-flags = tf.app.flags
+flags = tf.app.flags # https://www.jianshu.com/p/55cbd3753ee8
 FLAGS = flags.FLAGS
 
-sys.path.insert(1, 'incl')
+sys.path.insert(1, 'incl')  # 优先顺序，序号从0开始,加入的也是临时搜索路径，程序退出后失效。
 
-from seg_utils import seg_utils as seg
+from seg_utils import seg_utils as seg # submodules/evaluation/kitti_devkit/seg_utils.py
 
 try:
     # Check whether setup was done correctly
@@ -62,7 +65,7 @@ except ImportError:
                   "'git submodule update --init --recursive'")
     exit(1)
 
-
+# args.
 flags.DEFINE_string('logdir', None,
                     'Path to logdir.')
 flags.DEFINE_string('input_image', None,
@@ -77,7 +80,7 @@ weights_url = ("ftp://mi.eng.cam.ac.uk/"
 
 
 def maybe_download_and_extract(runs_dir):
-    logdir = os.path.join(runs_dir, default_run)
+    logdir = os.path.join(runs_dir, default_run) # RUNS/KittiSeg_pretrained
 
     if os.path.exists(logdir):
         # weights are downloaded. Nothing to do
@@ -123,18 +126,19 @@ def main(_):
         else:
             runs_dir = 'RUNS'
         maybe_download_and_extract(runs_dir)
-        logdir = os.path.join(runs_dir, default_run)
+        logdir = os.path.join(runs_dir, default_run) # logdir: 'RUNS/KittiSeg_pretrained'
     else:
         logging.info("Using weights found in {}".format(FLAGS.logdir))
         logdir = FLAGS.logdir
 
     # Loading hyperparameters from logdir
+    # get 'dirs' absolute path.
     hypes = tv_utils.load_hypes_from_logdir(logdir, base_path='hypes')
 
     logging.info("Hypes loaded successfully.")
 
     # Loading tv modules (encoder.py, decoder.py, eval.py) from logdir
-    modules = tv_utils.load_modules_from_logdir(logdir)
+    modules = tv_utils.load_modules_from_logdir(logdir) # get a dict modules. 
     logging.info("Modules loaded successfully. Starting to build tf graph.")
 
     # Create tf graph and build module.
@@ -144,6 +148,8 @@ def main(_):
         image = tf.expand_dims(image_pl, 0)
 
         # build Tensorflow graph using the model from logdir
+        # Run one evaluation against the full epoch of data.
+        # prediction['logits']; prediction['softmax'].
         prediction = core.build_inference_graph(hypes, modules,
                                                 image=image)
 
@@ -154,16 +160,17 @@ def main(_):
         saver = tf.train.Saver()
 
         # Load weights from logdir
-        core.load_weights(logdir, sess, saver)
+        # Load the weights of a model stored in saver.
+        core.load_weights(logdir, sess, saver) # logdir: 'RUNS/KittiSeg_pretrained'
 
         logging.info("Weights loaded successfully.")
 
     input_image = FLAGS.input_image
     logging.info("Starting inference using {} as input".format(input_image))
 
-    # Load and resize input image
-    image = scp.misc.imread(input_image)
-    if hypes['jitter']['reseize_image']:
+    # Load and resize input image.
+    image = scp.misc.imread(input_image)    # RGB
+    if hypes['jitter']['reseize_image']:    # Default: false
         # Resize input only, if specified in hypes
         image_height = hypes['jitter']['image_height']
         image_width = hypes['jitter']['image_width']
@@ -172,20 +179,21 @@ def main(_):
 
     # Run KittiSeg model on image
     feed = {image_pl: image}
-    softmax = prediction['softmax']
-    output = sess.run([softmax], feed_dict=feed)
+    softmax = prediction['softmax']  # softmax
+    output = sess.run([softmax], feed_dict=feed)    # Get probility image.
 
     # Reshape output from flat vector to 2D Image
     shape = image.shape
-    output_image = output[0][:, 1].reshape(shape[0], shape[1])
+    # output[0]:image, output[1]:label
+    output_image = output[0][:, 1].reshape(shape[0], shape[1])  
 
     # Plot confidences as red-blue overlay
-    rb_image = seg.make_overlay(image, output_image)
+    rb_image = seg.make_overlay(image, output_image)    # 0.4*output_iamge + 0.6*image
 
     # Accept all pixel with conf >= 0.5 as positive prediction
     # This creates a `hard` prediction result for class street
     threshold = 0.5
-    street_prediction = output_image > threshold
+    street_prediction = output_image > threshold    # binary image.
 
     # Plot the hard prediction as green overlay
     green_image = tv_utils.fast_overlay(image, street_prediction)
@@ -225,4 +233,4 @@ def main(_):
 
 
 if __name__ == '__main__':
-    tf.app.run()
+    tf.app.run()    # 上述第一行代码表示如果当前是从其它模块调用的该模块程序，则不会运行main函数！而如果就是直接运行的该模块程序，则会运行main函数。

@@ -68,7 +68,7 @@ flags.DEFINE_string('name', None,
 flags.DEFINE_string('project', None,
                     'Append a name Tag to run.')
 
-flags.DEFINE_string('hypes', None,
+flags.DEFINE_string('hypes', None,                      # hypes/KittiSeg.json
                     'File storing model parameters.')
 
 flags.DEFINE_string('mod', None,
@@ -106,7 +106,7 @@ def main(_):
     with open(tf.app.flags.FLAGS.hypes, 'r') as f:
         logging.info("f: %s", f)
         hypes = commentjson.load(f)
-    utils.load_plugins()
+    utils.load_plugins()    # Load all TensorVision plugins, *.py files.
 
     if tf.app.flags.FLAGS.mod is not None:
         import ast
@@ -116,15 +116,17 @@ def main(_):
     if 'TV_DIR_RUNS' in os.environ:
         os.environ['TV_DIR_RUNS'] = os.path.join(os.environ['TV_DIR_RUNS'],
                                                  'KittiSeg')
-    utils.set_dirs(hypes, tf.app.flags.FLAGS.hypes)
+    # Add directories to hypes.
+    utils.set_dirs(hypes, tf.app.flags.FLAGS.hypes)   # hypes/KittiSeg.json      
 
     utils._add_paths_to_sys(hypes)
 
     train.maybe_download_and_extract(hypes)
     logging.info("Initialize training folder")
-    train.initialize_training_folder(hypes)
+    train.initialize_training_folder(hypes) # dir: 'submodules/TensorVision/tensorvision/train.py'
     logging.info("Start training")
-    train.do_training(hypes)
+    # Train model for a number of steps.
+    train.do_training(hypes)    # # dir: 'submodules/TensorVision/tensorvision/train.py'
 
 
 if __name__ == '__main__':

@@ -103,14 +103,15 @@ def main(_):
 
     train.maybe_download_and_extract(hypes)
 
-    maybe_download_and_extract(runs_dir)
+    maybe_download_and_extract(runs_dir)    # runs_dir: 'RUNS'
     logging.info("Evaluating on Validation data.")
-    logdir = os.path.join(runs_dir, FLAGS.RUN)
+    logdir = os.path.join(runs_dir, FLAGS.RUN)  # logdir: 'RUNS/KittiSeg_pretrained'
     # logging.info("Output images will be saved to {}".format)
-    ana.do_analyze(logdir)
+    ana.do_analyze(logdir)  # evaluate: MaxF1, Average Precision, Speed (msec), Speed (fps).
 
     logging.info("Creating output on test data.")
-    kitti_test.do_inference(logdir)
+    # submodules/evaluation/kitti_test.py
+    kitti_test.do_inference(logdir)    # Inference on test data.
 
     logging.info("Analysis for pretrained model complete.")
     logging.info("For evaluating your own models I recommend using:"
@@ -119,4 +120,5 @@ def main(_):
 
 
 if __name__ == '__main__':
+    # 如果当前是从其它模块调用的该模块程序，则不会运行main函数！而如果就是直接运行的该模块程序，则会运行main函数。
     tf.app.run()

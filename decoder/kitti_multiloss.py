@@ -24,12 +24,13 @@ import tensorflow as tf
 
 
 def _add_softmax(hypes, logits):
-    num_classes = hypes['arch']['num_classes']
+    num_classes = hypes['arch']['num_classes']  # num_classes: 2
     with tf.name_scope('decoder'):
         logits = tf.reshape(logits, (-1, num_classes))
-        epsilon = tf.constant(value=hypes['solver']['epsilon'])
+        epsilon = tf.constant(value=hypes['solver']['epsilon'])     # "epsilon": 0.000000001,
         # logits = logits + epsilon
 
+        # softmax = tf.exp(logits) / tf.reduce_sum(tf.exp(logits), axis)
         softmax = tf.nn.softmax(logits)
 
     return softmax
@@ -79,7 +80,7 @@ def loss(hypes, decoded_logits, labels):
         elif hypes['loss'] == 'softIU':
             cross_entropy_mean = _compute_soft_ui(hypes, labels, softmax,
                                                   epsilon)
-
+        # Standard names to use for graph collections.
         reg_loss_col = tf.GraphKeys.REGULARIZATION_LOSSES
 
         weight_loss = tf.add_n(tf.get_collection(reg_loss_col),
@@ -96,7 +97,7 @@ def loss(hypes, decoded_logits, labels):
 
 
 def _compute_cross_entropy_mean(hypes, labels, softmax):
-    head = hypes['arch']['weight']
+    head = hypes['arch']['weight']  # "weight": [1, 1],
     cross_entropy = -tf.reduce_sum(tf.multiply(labels * tf.log(softmax), head),
                                    reduction_indices=[1])
 

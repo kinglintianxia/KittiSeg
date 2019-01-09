@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# coding: utf-8
+
 """
 Load Kitti Segmentation Input
 -------------------------------
@@ -309,7 +312,8 @@ def create_queues(hypes, phase):
     arch = hypes['arch']
     dtypes = [tf.float32, tf.int32]
 
-    shape_known = hypes['jitter']['reseize_image'] \
+    # shape_known: false
+    shape_known = hypes['jitter']['reseize_image'] \    
         or hypes['jitter']['crop_patch']
 
     if shape_known:
@@ -327,7 +331,10 @@ def create_queues(hypes, phase):
         shapes = None
 
     capacity = 50
+    # tf book chapter 7.3
+    # 多个线程输入数据处理
     q = tf.FIFOQueue(capacity=50, dtypes=dtypes, shapes=shapes)
+    # tensorboard 
     tf.summary.scalar("queue/%s/fraction_of_%d_full" %
                       (q.name + "_" + phase, capacity),
                       math_ops.cast(q.size(), tf.float32) * (1. / capacity))
@@ -439,10 +446,14 @@ def _processe_image(hypes, image):
     # randomize the order their operation.
     augment_level = hypes['jitter']['augment_level']
     if augment_level > 0:
+        # random_brightness: 在[-max_delta, max_delta)的范围随机调整图片的亮度。
         image = tf.image.random_brightness(image, max_delta=30)
+        # random_contrast: 将图片的对比度[0.75, 1.25]
         image = tf.image.random_contrast(image, lower=0.75, upper=1.25)
     if augment_level > 1:
+        # random_hue: 在[-max_delta, max_delta]的范围随机调整图片的色相
         image = tf.image.random_hue(image, max_delta=0.15)
+        # random_saturation: 在[lower, upper]的范围随机调整图的饱和度。
         image = tf.image.random_saturation(image, lower=0.5, upper=1.6)
 
     return image
@@ -451,11 +462,11 @@ def _processe_image(hypes, image):
 def inputs(hypes, q, phase):
     """Generate Inputs images."""
     if phase == 'val':
-        image, label = q.dequeue()
+        image, label = q.dequeue()      # out queue.
         image = tf.expand_dims(image, 0)
         label = tf.expand_dims(label, 0)
         return image, label
-
+    # shape_known: false
     shape_known = hypes['jitter']['reseize_image'] \
         or hypes['jitter']['crop_patch']
 
@@ -473,8 +484,9 @@ def inputs(hypes, q, phase):
                           "or `crop_patch` to obtain a defined shape")
             raise ValueError
     else:
+        # dequeue_many: Dequeues and concatenates n elements from this queue.
         image, label = q.dequeue_many(hypes['solver']['batch_size'])
-
+    # 调整图片的亮度/对比度/色相/饱和度
     image = _processe_image(hypes, image)
 
     # Display the training images in the visualizer.

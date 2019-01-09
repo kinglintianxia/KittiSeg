@@ -57,9 +57,9 @@ def training(hypes, loss, global_step, learning_rate, opt=None):
     total_loss = loss['total_loss']
     with tf.name_scope('training'):
 
-        if opt is None:
-
-            if sol['opt'] == 'RMS':
+        if opt is None:     # Default: None
+            # Default: 'Adam'
+            if sol['opt'] == 'RMS': 
                 opt = tf.train.RMSPropOptimizer(learning_rate=learning_rate,
                                                 decay=0.9,
                                                 epsilon=sol['epsilon'])

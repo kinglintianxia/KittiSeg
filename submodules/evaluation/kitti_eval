@@ -73,10 +73,10 @@ def _load_weights(checkpoint_dir, sess, saver):
 
 def _add_softmax(hypes, logits):
     with tf.name_scope('decoder'):
-        logits = tf.reshape(logits, (-1, 2))
+        logits = tf.reshape(logits, (-1, 2))    # shape = [None, 2]
         epsilon = tf.constant(value=hypes['solver']['epsilon'])
         logits = logits + epsilon
-
+        # softmax = tf.exp(logits) / tf.reduce_sum(tf.exp(logits), axis)
         softmax = tf.nn.softmax(logits)
 
     return softmax

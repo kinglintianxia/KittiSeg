@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-#
+# coding: utf-8
 #  THE KITTI VISION BENCHMARK SUITE: ROAD BENCHMARK
 #
 #  Copyright (C) 2013
@@ -52,17 +52,18 @@ def overlayImageWithConfidence(in_image, conf, vis_channel = 1, threshold = 0.5)
 def evalExp(gtBin, cur_prob, thres, validMap = None, validArea=None):
     '''
     Does the basic pixel based evaluation!
-    :param gtBin:
-    :param cur_prob:
-    :param thres:
-    :param validMap:
+    :param gtBin:  gt road image, [384,1248], 'True' or 'False'
+    :param cur_prob:  cnn image   [384,1248], 'True' or 'False'
+    :param thres:   [0.0, 1.0]
+    :param validMap: 
+    :param valid area.
     '''
 
     assert len(cur_prob.shape) == 2, 'Wrong size of input prob map'
     assert len(gtBin.shape) == 2, 'Wrong size of input prob map'
-    thresInf = np.concatenate(([-np.Inf], thres, [np.Inf]))
+    thresInf = np.concatenate(([-np.Inf], thres, [np.Inf])) # Join a sequence of arrays along an existing axis.
     
-    #Merge validMap with validArea
+    # Merge validMap with validArea
     if validMap is not None:
         if validArea is not None:
             validMap = (validMap == True) & (validArea == True)
@@ -73,9 +74,12 @@ def evalExp(gtBin, cur_prob, thres, validMap = None, validArea=None):
     if validMap is not None:
         fnArray = cur_prob[(gtBin == True) & (validMap == True)]
     else:
-        fnArray = cur_prob[(gtBin == True)]
-    fnHist = np.histogram(fnArray,bins=thresInf)[0]
-    fnCum = np.cumsum(fnHist)
+        fnArray = cur_prob[(gtBin == True)]     # TP+FN
+    fnHist = np.histogram(fnArray,bins=thresInf)[0] # np.histogram returns [hist, bin]
+    # a = np.array([[1,2,3], [4,5,6]])
+    # np.cumsum(a)
+    # >> array([ 1,  3,  6, 10, 15, 21])
+    fnCum = np.cumsum(fnHist)   # 累加和[CS,CUSUM]
     FN = fnCum[0:0+len(thres)];
     
     if validMap is not None:
@@ -84,6 +88,7 @@ def evalExp(gtBin, cur_prob, thres, validMap = None, validArea=None):
         fpArray = cur_prob[(gtBin == False)]
     
     fpHist  = np.histogram(fpArray, bins=thresInf)[0]
+    # np.flipud: Flip array in the up/down direction.
     fpCum = np.flipud(np.cumsum(np.flipud(fpHist)))
     FP = fpCum[1:1+len(thres)]
 
@@ -96,7 +101,7 @@ def evalExp(gtBin, cur_prob, thres, validMap = None, validArea=None):
     else:
         posNum = np.sum(gtBin == True)
         negNum = np.sum(gtBin == False)
-    return FN, FP, posNum, negNum
+    return FN, FP, posNum, negNum   # FN, FP, TP+FN, FP+TN
 
 def pxEval_maximizeFMeasure(totalPosNum, totalNegNum, totalFN, totalFP, thresh = None):
     '''

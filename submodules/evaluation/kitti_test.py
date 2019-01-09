@@ -45,9 +45,9 @@ test_file = 'data_road/testing.txt'
 
 
 def create_test_output(hypes, sess, image_pl, softmax):
-    data_dir = hypes['dirs']['data_dir']
-    data_file = os.path.join(data_dir, test_file)
-    image_dir = os.path.dirname(data_file)
+    data_dir = hypes['dirs']['data_dir']    # data_dir: 'DATA'
+    data_file = os.path.join(data_dir, test_file)   # data_file: 'DATA/data_road/testing.txt'
+    image_dir = os.path.dirname(data_file)  # image_dir: 'DATA/data_road/'
 
     logdir = "test_images/"
     logdir_rb = "test_images_rb/"
@@ -56,9 +56,9 @@ def create_test_output(hypes, sess, image_pl, softmax):
     logging.info("Images will be written to {}/test_images_{{green, rg}}"
                  .format(logdir))
 
-    logdir = os.path.join(hypes['dirs']['output_dir'], logdir)
-    logdir_rb = os.path.join(hypes['dirs']['output_dir'], logdir_rb)
-    logdir_green = os.path.join(hypes['dirs']['output_dir'], logdir_green)
+    logdir = os.path.join(hypes['dirs']['output_dir'], logdir)  # 'RUNS/KittiSeg_pretrained/test_images'
+    logdir_rb = os.path.join(hypes['dirs']['output_dir'], logdir_rb)    # 'RUNS/KittiSeg_pretrained/test_images_rb'
+    logdir_green = os.path.join(hypes['dirs']['output_dir'], logdir_green)  # 'RUNS/KittiSeg_pretrained/test_images_green'
 
     if not os.path.exists(logdir):
         os.mkdir(logdir)
@@ -114,7 +114,7 @@ def do_inference(logdir):
 
     Parameters
     ----------
-    logdir : string
+    logdir : string             # logdir: 'RUNS/KittiSeg_pretrained'
         Directory with logs.
     """
     hypes = utils.load_hypes_from_logdir(logdir)
