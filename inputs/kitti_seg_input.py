@@ -313,7 +313,7 @@ def create_queues(hypes, phase):
     dtypes = [tf.float32, tf.int32]
 
     # shape_known: false
-    shape_known = hypes['jitter']['reseize_image'] \    
+    shape_known = hypes['jitter']['reseize_image'] \
         or hypes['jitter']['crop_patch']
 
     if shape_known:

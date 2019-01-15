@@ -28,7 +28,7 @@ import tensorvision.utils as utils
 
 from evaluation import kitti_test
 
-flags.DEFINE_string('RUN', 'KittiSeg_pretrained',
+flags.DEFINE_string('RUN', 'KittiSeg_ResNet_2019_01_14_23.45',
                     'Modifier for model parameters.')
 flags.DEFINE_string('hypes', 'hypes/KittiSeg.json',
                     'File storing model parameters.')
@@ -61,7 +61,7 @@ def maybe_download_and_extract(runs_dir):
         # weights are downloaded. Nothing to do
         return
 
-    if not FLAGS.RUN == 'KittiSeg_pretrained':
+    if not FLAGS.RUN == 'KittiSeg_ResNet_2019_01_14_23.45':
         return
 
     import zipfile

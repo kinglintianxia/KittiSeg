@@ -57,13 +57,13 @@
 
   "solver": {
       "opt": "Adam",
-      "batch_size": 1,
+      "batch_size": 5,
       "epsilon": 0.000000001,
       "adam_eps": 0.00001,
       "threads": 4,
       "learning_rate": 1e-5,
       "learning_rate_step": null,
-      "max_steps": 8000
+      "max_steps": 20000
   },
   "use_fc_wd": true,
   "loss": "xentropy",
