@@ -49,7 +49,7 @@
 
   "logging": {
     "display_iter": 50,
-    "eval_iter": 250,
+    "eval_iter": 5000,
     "write_iter": 250,
     "save_iter": 2000,
     "image_iter": 20000

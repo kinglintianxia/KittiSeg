@@ -50,7 +50,7 @@ def decoder(hypes, logits, train):
     decoded_logits['softmax'] = _add_softmax(hypes, logits['fcn_logits'])
     return decoded_logits
 
-
+# compute loss for trainning.
 def loss(hypes, decoded_logits, labels):
     """Calculate the loss from the logits and the labels.
 

@@ -47,7 +47,7 @@ def resize_label_image(image, gt_image, image_height, image_width):
 
     return image, gt_image
 
-
+# 
 def evaluate(hypes, sess, image_pl, inf_out):
 
     softmax = inf_out['softmax']
@@ -153,6 +153,11 @@ def evaluate(hypes, sess, image_pl, inf_out):
                           100*eval_dict[phase]['BestThresh']))
         eval_list.append(('[{}] Average Precision'.format(phase),
                           100*eval_dict[phase]['AvgPrec']))
+        # king 
+        eval_list.append(('[{}] Pixel Accuracy'.format(phase),
+                          100*eval_dict[phase]['accuracy']))
+        eval_list.append(('[{}] IOU'.format(phase),
+                          100*eval_dict[phase]['IOU']))
     eval_list.append(('Speed (msec)', 1000*dt))
     eval_list.append(('Speed (fps)', 1/dt))
 

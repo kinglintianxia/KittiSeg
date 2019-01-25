@@ -28,7 +28,7 @@ import tensorvision.utils as utils
 
 from evaluation import kitti_test
 
-flags.DEFINE_string('RUN', 'KittiSeg_ResNet_2019_01_14_23.45',
+flags.DEFINE_string('RUN', 'KittiSeg_ResNet101_CityScapes_2019_01_15',
                     'Modifier for model parameters.')
 flags.DEFINE_string('hypes', 'hypes/KittiSeg.json',
                     'File storing model parameters.')
@@ -61,7 +61,7 @@ def maybe_download_and_extract(runs_dir):
         # weights are downloaded. Nothing to do
         return
 
-    if not FLAGS.RUN == 'KittiSeg_ResNet_2019_01_14_23.45':
+    if not FLAGS.RUN == 'KittiSeg_ResNet101_CityScapes_2019_01_15':
         return
 
     import zipfile
@@ -111,7 +111,7 @@ def main(_):
 
     logging.info("Creating output on test data.")
     # submodules/evaluation/kitti_test.py
-    kitti_test.do_inference(logdir)    # Inference on test data.
+    # kitti_test.do_inference(logdir)    # Inference on test data.
 
     logging.info("Analysis for pretrained model complete.")
     logging.info("For evaluating your own models I recommend using:"

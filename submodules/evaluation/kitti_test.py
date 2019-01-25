@@ -81,6 +81,8 @@ def create_test_output(hypes, sess, image_pl, softmax):
                 feed_dict = {image_pl: image}
 
                 output = sess.run([softmax['softmax']], feed_dict=feed_dict)
+                # output[0]: image, output[1]: labels
+                # output[0][:,1]: 'road' featuremap.
                 output_im = output[0][:, 1].reshape(shape[0], shape[1])
 
                 ov_image = seg.make_overlay(image, output_im)
